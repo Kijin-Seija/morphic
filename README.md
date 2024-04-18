@@ -1,4 +1,5 @@
 # Morphic
+[中文README](/README_zh.md)
 
 An AI-powered answer engine with a generative UI.
 
