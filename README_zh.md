@@ -1,8 +1,12 @@
 # Morphic
 
-一个带生成式 UI 的 AI 聊天应用，基于 [Next.js](https://nextjs.org/)、[Vercel AI SDK](https://sdk.vercel.ai/docs) 和 [OpenAI](https://openai.com/)。
+一个带生成式 UI 的 AI 聊天应用。
 
 ![capture](/public/capture-240404_blk.png)
+
+### Note
+
+此项目和官方网站[morphic.sh](morphic.sh)上的内容有区别。官网的内容在其基础上添加了一些功能，比如权限验证，方便更好的提供在线服务。不过核心源代码依然是来源于此项目，其代码被设计的更便于部署和开发。使用时请注意区分。
 
 ## 🔍 Overview
 
@@ -10,6 +14,16 @@
 - 🚀 [快速开始](#-快速开始)
 - 🌐 [部署](#-部署)
 - ✅ [已验证的模型](#-已验证的模型)
+
+### 🚗 Roadmap [WIP]
+
+- [x] 允许使用自定义模型 (only writer agent)
+- [ ] 实现聊天记录功能
+- [ ] 分享结果
+- [ ] 搜索结果支持视频
+- [ ] 支持增强式文本搜索(RAG)
+- [ ] 引入工具支持以提高生产力
+- [ ] 扩展更多功能
 
 ## 🧱 技术栈
 
@@ -66,9 +80,26 @@ OPENAI_API_KEY=[YOUR_OPENAI_API_KEY]
 
 # Tavily API Key retrieved here: https://app.tavily.com/home
 TAVILY_API_KEY=[YOUR_TAVILY_API_KEY]
+
+# Only writers can set a specific model. It must be compatible with the OpenAI API.
+# USE_SPECIFIC_API_FOR_WRITER=true
+# SPECIFIC_API_BASE=
+# SPECIFIC_API_KEY=
+# SPECIFIC_API_MODEL=
 ```
 
-**注: 此项目专注于生成式 UI，强依赖于 LLMs 的输出。虽然理论上其他模型也可用，但目前只验证了 OpenAI 官方模型的可用性。我们不保证其他模型的可用性。**
+> Kijin 注：相关配置解释<br />
+> OPENAI_API_BASE 设置 OpenAI API 请求的基准 URL。如果你需要设置一个 BASE URL，取消注释并设置以下内容：<br />
+> OPENAI_API_BASE=<br />
+> OPENAI_API_MODEL 设置 OpenAI API 请求的模型。如果未设置，则默认为 gpt-4-turbo。<br />
+> OPENAI_API_KEY 设置 OpenAI API 密钥，从 https://platform.openai.com/api-keys 获取。<br />
+> TAVILY_API_KEY 设置 Tavily API 密钥，从 https://app.tavily.com/home 获取。<br />
+> USE_SPECIFIC_API_FOR_WRITER 设置为 true 以使用特定 API 进行编写。它必须与 OpenAI API 兼容。<br />
+> SPECIFIC_API_BASE 设置特定 API 的基准 URL。<br />
+> SPECIFIC_API_KEY 设置特定 API 的密钥。<br />
+> SPECIFIC_API_MODEL 设置特定 API 的模型。<br />
+
+_注: 此项目专注于生成式 UI，强依赖于 LLMs 的输出。虽然理论上其他模型也可用，但目前只验证了 OpenAI 官方模型的可用性。我们不保证其他模型的可用性。_
 
 ### 4. 本地运行
 
@@ -78,15 +109,29 @@ bun dev
 
 现在可以访问 http://localhost:3000 查看效果
 
-> kejin 注：启动时间稍微有点长，是正常现象，等启动后再打开网页
+> kejin 注：启动时间可能稍微有点长，是正常现象，等启动后再打开网页
 
 ## 🌐 部署
+
+### Vercel
 
 可以直接在[Vercel](https://vercel.com/)上部署并在线使用。
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FKijin-Seija%2Fmorphic&env=OPENAI_API_KEY,TAVILY_API_KEY)
 
+### Cloudflare Pages
+
+1. Fork 此项目.
+2. 创建一个 Cloudflare Pages 项目.
+3. 选择 `Morphic` repo 和 `Next.js` preset.
+4. 设置 `OPENAI_API_KEY` 和 `TAVILY_API_KEY` 环境变量.
+5. 保存并部署.
+6. 取消部署, 进入`Settings` -> `Functions` -> `Compatibility flags`, add `nodejs_compat` 进行预览和发布.
+7. 重新部署.
+
 ## ✅ 已验证的模型
+
+以下是一些已经得到验证的可用于 writers 的模型。
 
 - [Groq](https://console.groq.com/docs/models)
   - LLaMA3 8b

@@ -1,5 +1,8 @@
 # Morphic
-[中文README](/README_zh.md)
+
+![](https://img.shields.io/badge/status-active-green)
+
+[中文 README](/README_zh.md)
 
 An AI-powered search engine with a generative UI.
 
