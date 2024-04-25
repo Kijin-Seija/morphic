@@ -1,9 +1,13 @@
 # Morphic
 [中文README](/README_zh.md)
 
-An AI-powered answer engine with a generative UI.
+An AI-powered search engine with a generative UI.
 
 ![capture](/public/capture-240404_blk.png)
+
+### Note
+
+Please note that there are differences between this repository and the official website [morphic.sh](morphic.sh). The official website is a fork of this repository with additional features such as authentication, which are necessary for providing the service online. The core source code of Morphic resides in this repository, and it's designed to be easily built and deployed. When using Morphic, please keep in mind the different roles of the repository and the website.
 
 ## 🔍 Overview
 
@@ -11,6 +15,16 @@ An AI-powered answer engine with a generative UI.
 - 🚀 [Quickstart](#-quickstart)
 - 🌐 [Deploy](#-deploy)
 - ✅ [Verified models](#-verified-models)
+
+### 🚗 Roadmap [WIP]
+
+- [x] Enable specifying the model to use (only writer agent)
+- [ ] Implement chat history functionality
+- [ ] Develop features for sharing results
+- [ ] Add video support for search functionality
+- [ ] Implement Retrieval-Augmented Generation (RAG) support
+- [ ] Introduce tool support for enhanced productivity
+- [ ] Expand Generative UI capabilities
 
 ## 🧱 Stack
 
@@ -69,7 +83,7 @@ TAVILY_API_KEY=[YOUR_TAVILY_API_KEY]
 # SPECIFIC_API_MODEL=
 ```
 
-**Note: This project focuses on Generative UI and requires complex output from LLMs. Currently, it's assumed that the official OpenAI models will be used. Although it's possible to set up other models, if you use an OpenAI-compatible model, but we don't guarantee that it'll work. **
+_Note: This project focuses on Generative UI and requires complex output from LLMs. Currently, it's assumed that the official OpenAI models will be used. Although it's possible to set up other models, if you use an OpenAI-compatible model, but we don't guarantee that it'll work._
 
 ### 4. Run app locally
 
@@ -81,9 +95,21 @@ You can now visit http://localhost:3000.
 
 ## 🌐 Deploy
 
-Host your own live version of Morphic with Vercel.
+Host your own live version of Morphic with Vercel or Cloudflare Pages.
+
+### Vercel
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmiurla%2Fmorphic&env=OPENAI_API_KEY,TAVILY_API_KEY)
+
+### Cloudflare Pages
+
+1. Fork the repo to your GitHub.
+2. Create a Cloudflare Pages project.
+3. Select `Morphic` repo and `Next.js` preset.
+4. Set `OPENAI_API_KEY` and `TAVILY_API_KEY` env vars.
+5. Save and deploy.
+6. Cancel deployment, go to `Settings` -> `Functions` -> `Compatibility flags`, add `nodejs_compat` to preview and production.
+7. Redeploy.
 
 ## ✅ Verified models
 
