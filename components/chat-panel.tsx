@@ -1,21 +1,28 @@
 import { useEffect, useState, useRef } from 'react'
-import type { AI } from '@/app/action'
-import { useUIState, useActions, useAIState } from 'ai/rsc'
+import { useRouter } from 'next/navigation'
+import type { AI, UIState } from '@/app/actions'
+import { useUIState, useActions } from 'ai/rsc'
 import { cn } from '@/lib/utils'
 import { UserMessage } from './user-message'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
-import { ArrowRight, Plus, Square } from 'lucide-react'
+import { ArrowRight, Plus } from 'lucide-react'
 import { EmptyScreen } from './empty-screen'
+import Textarea from 'react-textarea-autosize'
+import { nanoid } from 'ai'
 
-export function ChatPanel() {
+interface ChatPanelProps {
+  messages: UIState
+}
+
+export function ChatPanel({ messages }: ChatPanelProps) {
   const [input, setInput] = useState('')
-  const [messages, setMessages] = useUIState<typeof AI>()
-  const [aiMessages, setAiMessages] = useAIState<typeof AI>()
-  const { submit } = useActions<typeof AI>()
+  const [, setMessages] = useUIState<typeof AI>()
+  const { submit } = useActions()
   const [isButtonPressed, setIsButtonPressed] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
   const [showEmptyScreen, setShowEmptyScreen] = useState(false)
+  const router = useRouter()
   // Focus on input when button is pressed
   useEffect(() => {
     if (isButtonPressed) {
@@ -37,7 +44,7 @@ export function ChatPanel() {
     setMessages(currentMessages => [
       ...currentMessages,
       {
-        id: Date.now(),
+        id: nanoid(),
         component: <UserMessage message={input} />
       }
     ])
@@ -46,15 +53,11 @@ export function ChatPanel() {
     const formData = new FormData(e.currentTarget)
     const responseMessage = await submit(formData)
     setMessages(currentMessages => [...currentMessages, responseMessage as any])
-
-    setInput('')
   }
 
   // Clear messages
   const handleClear = () => {
-    setIsButtonPressed(true)
-    setMessages([])
-    setAiMessages([])
+    router.push('/')
   }
 
   useEffect(() => {
@@ -81,26 +84,57 @@ export function ChatPanel() {
     )
   }
 
-  // Condition 1 and 3: If there are no messages or the button is pressed, display the form
-  const formPositionClass =
-    messages.length === 0
-      ? 'fixed bottom-8 left-0 right-0 top-10 mx-auto h-screen flex flex-col items-center justify-center'
-      : 'fixed bottom-8-ml-6'
   return (
-    <div className={formPositionClass}>
-      {/* <IconKuroko className="w-6 h-6 mb-4" /> */}
+    <div
+      className={
+        'fixed bottom-8 left-0 right-0 top-10 mx-auto h-screen flex flex-col items-center justify-center'
+      }
+    >
       <form onSubmit={handleSubmit} className="max-w-2xl w-full px-6">
         <div className="relative flex items-center w-full">
-          <Input
+          <Textarea
             ref={inputRef}
-            type="text"
             name="input"
+            rows={1}
+            maxRows={5}
+            tabIndex={0}
             placeholder="Ask a question..."
+            spellCheck={false}
             value={input}
-            className="pl-4 pr-10 h-12 rounded-full bg-muted"
+            className="resize-none w-full min-h-12 rounded-fill bg-muted border border-input pl-4 pr-10 pt-3 pb-1 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'"
             onChange={e => {
               setInput(e.target.value)
               setShowEmptyScreen(e.target.value.length === 0)
+            }}
+            onKeyDown={e => {
+              // Enter should submit the form
+              if (
+                e.key === 'Enter' &&
+                !e.shiftKey &&
+                !e.nativeEvent.isComposing
+              ) {
+                // Prevent the default action to avoid adding a new line
+                e.preventDefault()
+                const textarea = e.target as HTMLTextAreaElement
+                textarea.form?.requestSubmit()
+              }
+            }}
+            onHeightChange={height => {
+              // Ensure inputRef.current is defined
+              if (!inputRef.current) return
+
+              // The initial height and left padding is 70px and 2rem
+              const initialHeight = 70
+              // The initial border radius is 32px
+              const initialBorder = 32
+              // The height is incremented by multiples of 20px
+              const multiple = (height - initialHeight) / 20
+
+              // Decrease the border radius by 4px for each 20px height increase
+              const newBorder = initialBorder - 4 * multiple
+              // The lowest border radius will be 8px
+              inputRef.current.style.borderRadius =
+                Math.max(8, newBorder) + 'px'
             }}
             onFocus={() => setShowEmptyScreen(true)}
             onBlur={() => setShowEmptyScreen(false)}
