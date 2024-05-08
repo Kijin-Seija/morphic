@@ -6,7 +6,7 @@
 
 ### Note
 
-此项目和官方网站[morphic.sh](morphic.sh)上的内容有区别。官网的内容在其基础上添加了一些功能，比如权限验证，方便更好的提供在线服务。不过核心源代码依然是来源于此项目，其代码被设计的更便于部署和开发。使用时请注意区分。
+此项目和官方网站[morphic.sh](morphic.sh)上的内容有区别。官网的内容在其基础上添加了一些功能，比如权限验证等。方便更好的提供在线服务。不过核心源代码依然是来源于此项目，其代码被设计的更便于部署和开发。使用时请注意区分。
 
 ## 🔍 Overview
 
@@ -18,7 +18,7 @@
 ### 🚗 Roadmap [WIP]
 
 - [x] 允许使用自定义模型 (only writer agent)
-- [ ] 实现聊天记录功能
+- [x] 实现聊天记录功能
 - [ ] 分享结果
 - [ ] 搜索结果支持视频
 - [ ] 支持增强式文本搜索(RAG)
@@ -47,14 +47,22 @@ git clone git@github.com:[YOUR_GITHUB_ACCOUNT]/morphic.git
 
 ### 2. 安装依赖
 
-> kejin 注: Mophic 使用 [Bun](https://bun.sh/) 作为包管理器，如果你没有安装 Bun，请先安装 Bun。
+> Kijin 注: Mophic 使用 [Bun](https://bun.sh/) 作为包管理器，如果你没有安装 Bun，请先安装 Bun。
 
 ```
 cd morphic
-bun i
+bun install
 ```
 
-### 3. 完善相关秘钥信息
+### 3. 设置 Upstash Redis
+
+按照下面的指引设置 Upstash Redis，创建一个 Redis database 并获取`UPSTASH_REDIS_REST_URL` 和 `UPSTASH_REDIS_REST_TOKEN`。
+
+参考[Upstash 指引](https://upstash.com/blog/rag-chatbot-upstash#setting-up-upstash-redis)来构建和运行。
+
+> Kijin 注: Upstash 是一个在线 Serverless 服务，提供 Redis, Kafka, QStash 和向量数据库的在线创建和 Rest API 访问。估计是开发者为了提供聊天记录保存而添加的。Upstash 官网: https://upstash.com/
+
+### 4. 完善相关秘钥信息
 
 复制一份`.env.local.example`到`.env.local`，并设置你的 OpenAI 和 Tavily API 密钥。
 
@@ -81,11 +89,9 @@ OPENAI_API_KEY=[YOUR_OPENAI_API_KEY]
 # Tavily API Key retrieved here: https://app.tavily.com/home
 TAVILY_API_KEY=[YOUR_TAVILY_API_KEY]
 
-# Only writers can set a specific model. It must be compatible with the OpenAI API.
-# USE_SPECIFIC_API_FOR_WRITER=true
-# SPECIFIC_API_BASE=
-# SPECIFIC_API_KEY=
-# SPECIFIC_API_MODEL=
+# Upstash Redis URL and Token retrieved here: https://console.upstash.com/redis
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
 ```
 
 > Kijin 注：相关配置解释<br />
@@ -94,6 +100,11 @@ TAVILY_API_KEY=[YOUR_TAVILY_API_KEY]
 > OPENAI_API_MODEL 设置 OpenAI API 请求的模型。如果未设置，则默认为 gpt-4-turbo。<br />
 > OPENAI_API_KEY 设置 OpenAI API 密钥，从 https://platform.openai.com/api-keys 获取。<br />
 > TAVILY_API_KEY 设置 Tavily API 密钥，从 https://app.tavily.com/home 获取。<br />
+> UPSTASH_REDIS_REST_URL 设置 Upstash Redis URL，从 https://console.upstash.com/redis 获取。<br />
+> UPSTASH_REDIS_REST_TOKEN 设置 Upstash Redis Token，从 https://console.upstash.com/redis 获取。
+
+> _以下配置为可选项，请在.env.local.example 中查看。_
+
 > USE_SPECIFIC_API_FOR_WRITER 设置为 true 以使用特定 API 进行编写。它必须与 OpenAI API 兼容。<br />
 > SPECIFIC_API_BASE 设置特定 API 的基准 URL。<br />
 > SPECIFIC_API_KEY 设置特定 API 的密钥。<br />
@@ -109,7 +120,7 @@ bun dev
 
 现在可以访问 http://localhost:3000 查看效果
 
-> kejin 注：启动时间可能稍微有点长，是正常现象，等启动后再打开网页
+> Kijin 注：启动时间可能稍微有点长，是正常现象，等启动后再打开网页
 
 ## 🌐 部署
 
