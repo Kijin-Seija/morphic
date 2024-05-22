@@ -19,7 +19,8 @@
 
 - [x] 允许使用自定义模型 (only writer agent)
 - [x] 实现聊天记录功能
-- [ ] 分享结果
+- [x] 分享结果
+- [x] 支持从指定 URL 获取内容
 - [ ] 搜索结果支持视频
 - [ ] 支持增强式文本搜索(RAG)
 - [ ] 引入工具支持以提高生产力
@@ -30,9 +31,10 @@
 - App 框架: [Next.js](https://nextjs.org/)
 - 生成式 UI: [Vercel AI SDK](https://sdk.vercel.ai/docs)
 - AI 模型: [OpenAI](https://openai.com/)
-- 搜索 API: [Tavily AI](https://tavily.com/)
-- Headless component primitives: [Radix UI](https://www.radix-ui.com/)
+- 搜索 API: [Tavily AI](https://tavily.com/) / [Exa AI](https://exa.ai/)
+- Serverless 数据库: [Upstash](https://upstash.com/)
 - 组件库: [shadcn/ui](https://ui.shadcn.com/)
+- Headless component primitives: [Radix UI](https://www.radix-ui.com/)
 - 样式: [Tailwind CSS](https://tailwindcss.com/)
 
 ## 🚀 快速开始
@@ -139,6 +141,8 @@ bun dev
 5. 保存并部署.
 6. 取消部署, 进入`Settings` -> `Functions` -> `Compatibility flags`, add `nodejs_compat` 进行预览和发布.
 7. 重新部署.
+
+**需要解决以下构建问题: [issue](https://github.com/miurla/morphic/issues/114)**
 
 ## ✅ 已验证的模型
 
