@@ -6,7 +6,7 @@ import {
   getAIState,
   getMutableAIState
 } from 'ai/rsc'
-import { ExperimentalMessage, nanoid, ToolResultPart } from 'ai'
+import { CoreMessage, nanoid, ToolResultPart } from 'ai'
 import { Spinner } from '@/components/ui/spinner'
 import { Section } from '@/components/section'
 import { FollowupPanel } from '@/components/followup-panel'
@@ -20,6 +20,7 @@ import { BotMessage } from '@/components/message'
 import { SearchSection } from '@/components/search-section'
 import SearchRelated from '@/components/search-related'
 import { CopilotDisplay } from '@/components/copilot-display'
+import RetrieveSection from '@/components/retrieve-section'
 
 async function submit(formData?: FormData, skip?: boolean) {
   'use server'
@@ -29,9 +30,7 @@ async function submit(formData?: FormData, skip?: boolean) {
   const isGenerating = createStreamableValue(true)
   const isCollapsed = createStreamableValue(false)
   // Get the messages from the state, filter out the tool messages
-  const messages: ExperimentalMessage[] = [
-    ...(aiState.get().messages as any[])
-  ].filter(
+  const messages: CoreMessage[] = [...(aiState.get().messages as any[])].filter(
     message =>
       message.role !== 'tool' &&
       message.type !== 'followup' &&
@@ -124,7 +123,7 @@ async function submit(formData?: FormData, skip?: boolean) {
     while (
       useSpecificAPI
         ? toolOutputs.length === 0 && answer.length === 0
-        : answer.length === 0
+        : answer.length === 0 && !errorOccurred
     ) {
       // Search the web and generate the answer
       const { fullResponse, hasError, toolResponses } = await researcher(
@@ -168,8 +167,9 @@ async function submit(formData?: FormData, skip?: boolean) {
               type: 'tool'
             }
           : msg
-      ) as ExperimentalMessage[]
-      answer = await writer(uiStream, streamText, modifiedMessages)
+      ) as CoreMessage[]
+      const latestMessages = modifiedMessages.slice(maxMessages * -1)
+      answer = await writer(uiStream, streamText, latestMessages)
     } else {
       streamText.done()
     }
@@ -231,6 +231,7 @@ async function submit(formData?: FormData, skip?: boolean) {
 export type AIState = {
   messages: AIMessage[]
   chatId: string
+  isSharePage?: boolean
 }
 
 export type UIState = {
@@ -254,7 +255,7 @@ export const AI = createAI<AIState, UIState>({
   },
   initialUIState,
   initialAIState,
-  unstable_onGetUIState: async () => {
+  onGetUIState: async () => {
     'use server'
 
     const aiState = getAIState()
@@ -265,7 +266,7 @@ export const AI = createAI<AIState, UIState>({
       return
     }
   },
-  unstable_onSetAIState: async ({ state, done }) => {
+  onSetAIState: async ({ state, done }) => {
     'use server'
 
     // Check if there is any message of type 'answer' in the state messages
@@ -306,11 +307,19 @@ export const AI = createAI<AIState, UIState>({
 })
 
 export const getUIStateFromAIState = (aiState: Chat) => {
+  const chatId = aiState.chatId
+  const isSharePage = aiState.isSharePage
   return aiState.messages
-    .map(message => {
+    .map((message, index) => {
       const { role, content, id, type, name } = message
 
-      if (!type || type === 'end') return null
+      if (
+        !type ||
+        type === 'end' ||
+        (isSharePage && type === 'related') ||
+        (isSharePage && type === 'followup')
+      )
+        return null
 
       switch (role) {
         case 'user':
@@ -321,7 +330,13 @@ export const getUIStateFromAIState = (aiState: Chat) => {
               const value = type === 'input' ? json.input : json.related_query
               return {
                 id,
-                component: <UserMessage message={value} />
+                component: (
+                  <UserMessage
+                    message={value}
+                    chatId={chatId}
+                    showShare={index === 0 && !isSharePage}
+                  />
+                )
               }
             case 'inquiry':
               return {
@@ -375,6 +390,12 @@ export const getUIStateFromAIState = (aiState: Chat) => {
                 return {
                   id,
                   component: <SearchSection result={searchResults.value} />,
+                  isCollapsed: isCollapsed.value
+                }
+              case 'retrieve':
+                return {
+                  id,
+                  component: <RetrieveSection data={toolOutput} />,
                   isCollapsed: isCollapsed.value
                 }
             }
