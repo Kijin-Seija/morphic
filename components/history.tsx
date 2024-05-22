@@ -8,16 +8,16 @@ import {
 import { Button } from '@/components/ui/button'
 import { ChevronLeft, Menu } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import HistoryItem from './history-item'
-import { Chat } from '@/lib/types'
 import { History as HistoryIcon } from 'lucide-react'
+import { HistoryList } from './history-list'
+import { Suspense } from 'react'
+import { HistorySkeleton } from './history-skelton'
 
 type HistoryProps = {
   location: 'sidebar' | 'header'
-  chats: Chat[]
 }
 
-export function History({ location, chats }: HistoryProps) {
+export function History({ location }: HistoryProps) {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -38,16 +38,10 @@ export function History({ location, chats }: HistoryProps) {
             History
           </SheetTitle>
         </SheetHeader>
-        <div className="pb-6 overflow-y-auto h-full">
-          {!chats?.length ? (
-            <div className="text-foreground/30 text-sm text-center py-4">
-              No history yet
-            </div>
-          ) : (
-            chats?.map((chat: Chat) => (
-              <HistoryItem key={chat.id} chat={chat} />
-            ))
-          )}
+        <div className="my-2 h-full pb-12 md:pb-10">
+          <Suspense fallback={<HistorySkeleton />}>
+            <HistoryList userId="anonymous" />
+          </Suspense>
         </div>
       </SheetContent>
     </Sheet>
