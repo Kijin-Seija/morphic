@@ -8,23 +8,29 @@
 
 此项目和官方网站[morphic.sh](morphic.sh)上的内容有区别。官网的内容在其基础上添加了一些功能，比如权限验证等。方便更好的提供在线服务。不过核心源代码依然是来源于此项目，其代码被设计的更便于部署和开发。使用时请注意区分。
 
-## 🔍 Overview
+## 🗂️ Overview
 
+- 🛠 [功能](#-功能)
 - 🧱 [技术栈](#-技术栈)
 - 🚀 [快速开始](#-快速开始)
 - 🌐 [部署](#-部署)
+- 🔎 [搜索引擎](#-搜索引擎)
 - ✅ [已验证的模型](#-已验证的模型)
 
-### 🚗 Roadmap [WIP]
+## 🛠 功能
 
-- [x] 允许使用自定义模型 (only writer agent)
-- [x] 实现聊天记录功能
-- [x] 分享结果
-- [x] 支持从指定 URL 获取内容
-- [ ] 搜索结果支持视频
-- [ ] 支持增强式文本搜索(RAG)
-- [ ] 引入工具支持以提高生产力
-- [ ] 扩展更多功能
+- 使用生成式 UI 搜索和回答
+- 理解用户问题
+- 搜索历史
+- 分享搜索结果 ([可选](https://github.com/miurla/morphic/blob/main/.env.local.example))
+- 支持视频搜索 ([可选](https://github.com/miurla/morphic/blob/main/.env.local.example))
+- 从指定 URLs 获取回答
+- 作为搜索引擎使用 [※](#-搜索引擎)
+- 支持 OpenAI 之外的 AI 提供方
+  - Google 生成式 AI [※](https://github.com/miurla/morphic/issues/192)
+  - Ollama ([Unstable](https://github.com/miurla/morphic/issues/215))
+- 自定义回答模型
+  - Groq API [※](https://github.com/miurla/morphic/pull/58)
 
 ## 🧱 技术栈
 
@@ -144,9 +150,39 @@ bun dev
 
 **需要解决以下构建问题: [issue](https://github.com/miurla/morphic/issues/114)**
 
+## 🔎 搜索引擎
+
+### 将 Morphic 设置为浏览器的搜索引擎
+
+如果你希望将你的浏览器搜索引擎设置为 Morphic，可以按照以下步骤：
+
+1. 打开浏览器设置
+2. 进入“搜索引擎设置”
+3. 选择 "管理搜索引擎".
+4. 在"搜索网站"下点击“添加”
+5. 填入下面的内容:
+   - **搜索引擎 e**: Morphic
+   - **Shortcut**: morphic
+   - **URL with %s in place of query**: `https://morphic.sh/search?q=%s`
+6. 点击“添加”保存搜索引擎
+7. 在搜索引擎列表里找到 Morphic，点击旁边三点按钮，选择“设为默认”.
+
+这样即可让你的默认搜索引擎变为 Morphic
+
 ## ✅ 已验证的模型
 
-以下是一些已经得到验证的可用于 writers 的模型。
+### 所有功能都可用的
+
+- OpenAI
+  - gpt-4o
+  - gpt-4-turbo
+  - gpt-3.5-turbo
+- Google
+  - Gemini 1.5 pro [※](https://github.com/miurla/morphic/issues/192)
+- Ollama (Unstable)
+  - mistral/openhermes & Phi3/llama3 [※](https://github.com/miurla/morphic/issues/215)
+
+# 已经得到验证的可用于 writers 的模型。
 
 - [Groq](https://console.groq.com/docs/models)
   - LLaMA3 8b
